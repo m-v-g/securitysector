@@ -175,6 +175,10 @@ input[type="submit"]:focus-visible
   outline: 2px solid $white
   outline-offset: 3px
 
+// phone-only call / order bar; it replaces the scattered order buttons
+.action-bar
+  display: none
+
 @media (max-width: 900px)
 
   .intro--banner img
@@ -242,20 +246,100 @@ input[type="submit"]:focus-visible
       padding: 96px 0 48px 0
       transform: none !important
 
+  .action-bar
+    position: fixed
+    left: 0
+    right: 0
+    bottom: 0
+    z-index: 50
+    display: flex
+    gap: 8px
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) 12px
+    background-color: $black
+    border-top: 1px solid #1c1c1c
+    transition: transform .25s ease-in-out
+
+    &.is-hidden
+      transform: translateY(100%)
+
+    a
+      flex: 1
+      line-height: 46px
+      text-align: center
+      text-decoration: none
+      color: $white
+      font-size: 15px
+      font-weight: 700
+      border: 1px solid #3a3a3a
+
+      &:last-child
+        background-color: $highlight
+        border-color: $highlight
+
+  .perspective--modalview .action-bar
+    display: none
+
+  body
+    padding-bottom: 64px
+
+  // the bar carries the order button on phones
+  .intro--banner .cta
+    display: none
+
+  // map on top, contact details underneath
+  .l-section > .contact
+    padding: calc(56px + 56vw) 0 24px 0
+
   .contact
     position: relative
-    min-height: 620px
     margin: 0 -20px
+    background-size: 100% auto
+    background-position: center 56px
     box-sizing: border-box
+
+    &--credit
+      top: calc(56px + 56vw - 22px)
+      bottom: auto
 
     &--lockup
       width: auto
       height: auto
       max-width: none
-      padding: 0 20px
+      padding: 0
+
+      .modal
+        width: 100%
+        padding: 28px 20px 8px 20px
+        box-shadow: none
+
+        &--information a[href^="tel"]
+          font-size: 22px
+
+        // call and email are already links above; keep only directions
+        &--options
+          li:nth-child(2),
+          li:nth-child(3)
+            display: none
+
+          li:nth-child(1)
+            width: 100%
+            margin: 0
 
   .work--lockup
     padding-bottom: 20px
+
+  // order form: two even columns of system tiles
+  .work-request--options
+    gap: 10px
+
+    .options-a,
+    .options-b
+      flex: 1
+
+    label
+      width: 100%
+      margin-bottom: 10px
+      box-sizing: border-box
 
   .intro--banner
     h1

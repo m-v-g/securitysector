@@ -61,6 +61,13 @@
     if (phone.matches) scrollTo($sections.length - 1);
   });
 
+  // the phone call / order bar steps aside once the order form itself is on screen
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      $('.action-bar').toggleClass('is-hidden', entries[0].isIntersecting);
+    }, { threshold: 0.25 }).observe(document.getElementById('order'));
+  }
+
   // keep the template's wheel and arrow-key slide switching away from the scrolling phone page
   ['mousewheel', 'DOMMouseScroll', 'keyup'].forEach(function (type) {
     window.addEventListener(type, function (e) { if (phone.matches) e.stopPropagation(); }, true);
