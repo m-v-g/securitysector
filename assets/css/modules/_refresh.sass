@@ -114,6 +114,17 @@ h1, h2
 .contact
   background-position: 38% center
 
+  // the map melts into the black page at the sides
+  &::before
+    content: ""
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    background: linear-gradient(to right, $black 0, rgba(12, 12, 12, 0) 28%, rgba(12, 12, 12, 0) 72%, $black 100%)
+    pointer-events: none
+
   &--credit
     position: absolute
     right: 12px
@@ -122,16 +133,47 @@ h1, h2
     color: #666
     font-size: 11px
 
-  .modal--options
-    li:nth-child(1),
-    li:nth-child(2),
-    li:nth-child(3)
-      background-color: transparent
-      border: 2px solid $highlight
-      text-transform: none
 
-    li:nth-child(2)
+// directions, call and email: larger icons above the messengers; call is the main one
+.modal--actions
+  display: flex
+  justify-content: center
+  gap: 16px
+  margin: 6px 0 16px 0
+
+  a
+    display: flex
+    width: 54px
+    height: 54px
+    align-items: center
+    justify-content: center
+    border: 2px solid $highlight
+    border-radius: 50%
+    transition: background-color .2s ease-in-out
+
+    &:nth-child(2)
       background-color: $highlight
+
+    &:hover,
+    &:focus-visible
+      background-color: $highlight
+
+  svg
+    width: 22px
+    height: 22px
+    fill: none
+    stroke: $white
+    stroke-width: 1.8
+    stroke-linecap: round
+    stroke-linejoin: round
+
+.visually-hidden
+  position: absolute
+  width: 1px
+  height: 1px
+  overflow: hidden
+  clip: rect(0 0 0 0)
+  white-space: nowrap
 
 // messengers and social pages as one row of round icons
 .modal--social
@@ -278,6 +320,13 @@ input[type="submit"]:focus-visible
     background-position: center 70px
 
   .contact
+    // on phones the map is a strip on top: fade its sides and its lower edge
+    &::before
+      top: 70px
+      bottom: auto
+      height: 56vw
+      background: linear-gradient(to bottom, rgba(12, 12, 12, 0) 55%, $black 100%), linear-gradient(to right, $black 0, rgba(12, 12, 12, 0) 22%, rgba(12, 12, 12, 0) 78%, $black 100%)
+
     &--credit
       top: calc(70px + 56vw - 22px)
       bottom: auto
@@ -296,15 +345,6 @@ input[type="submit"]:focus-visible
         &--information a[href^="tel"]
           font-size: 22px
 
-        // call and email are already links above; keep only directions
-        &--options
-          li:nth-child(2),
-          li:nth-child(3)
-            display: none
-
-          li:nth-child(1)
-            width: 100%
-            margin: 0
 
   .work--lockup
     padding-bottom: 20px
