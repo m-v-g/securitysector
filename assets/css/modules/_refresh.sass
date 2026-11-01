@@ -122,7 +122,7 @@ input[type="submit"]:focus-visible
 
     h1
       margin-top: 0
-      font-size: 34px
+      font-size: 30px
 
   .intro--options > a
     margin-bottom: 18px
@@ -155,3 +155,75 @@ input[type="submit"]:focus-visible
 
     p
       display: none
+
+// typography: Montserrat has no Armenian glyphs, so Armenian falls through to Noto Sans Armenian
+@font-face
+  font-family: "Microgramma"
+  src: url("fonts/microgramma-bold.otf") format("opentype")
+  font-weight: 700
+  font-display: swap
+
+body
+  font-family: "Montserrat", "Noto Sans Armenian", sans-serif
+  background: radial-gradient(ellipse 60% 55% at 78% 38%, rgba(180, 0, 1, .13), transparent 70%), $black
+
+h1, h2
+  letter-spacing: -.01em
+
+.header--logo p
+  font-family: "Microgramma", "Montserrat", sans-serif
+  font-size: 15px
+  letter-spacing: .03em
+  color: #dbdddd
+
+.side-nav > li span
+  font-weight: 400
+
+.services--icon
+  display: block
+  width: 34px
+  height: 34px
+  margin-bottom: 14px
+  fill: none
+  stroke: $highlight
+  stroke-width: 1.6
+  stroke-linecap: round
+  stroke-linejoin: round
+
+.slider--item-center .slider--item-image
+  box-shadow: 0 20px 60px rgba(180, 0, 1, .35)
+
+@media (max-width: 767px)
+
+  .services--icon
+    width: 26px
+    height: 26px
+    margin-bottom: 8px
+
+@media (max-width: 400px)
+
+  .header--logo p
+    font-size: 12px
+
+@media (max-width: 600px)
+
+  .services
+    padding-top: 40px
+
+    h2
+      margin-bottom: 14px
+      font-size: 22px
+
+  .services--grid
+    gap: 14px 18px
+
+    li
+      padding-top: 10px
+
+    h3
+      margin-bottom: 4px
+      font-size: 14px
+
+    p
+      font-size: 12px
+      line-height: 1.4
