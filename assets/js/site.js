@@ -1,8 +1,6 @@
 // Site behaviour on top of the template's functions.js
 (function ($) {
 
-  var $sections = $('.main-content > li');
-
   // ---- languages -------------------------------------------------------
   // Armenian lives in the markup; remember it so switching back restores it.
   I18N.hy = {
@@ -38,91 +36,23 @@
   if (saved && saved !== 'hy') setLang(saved);
 
   // ---- navigation ------------------------------------------------------
-  // The page is one long scroll; every menu item, numbered dot and order button scrolls to its section.
-  var last = $sections.length - 1;
-
-  // sections snap to the top of the screen; their own top padding clears the header
-  function scrollTo(index) {
-    var top = $sections.eq(index).offset().top;
-    window.scrollTo({ top: top, behavior: 'smooth' });
-  }
-
-  function setMenu(open) {
-    $('body').toggleClass('menu-open', open);
-    $('.outer-nav, .outer-nav li').toggleClass('is-vis', open);
-    $('.header--nav-toggle').attr('aria-expanded', open);
-  }
-
-  $('.header--nav-toggle').on('click', function () { setMenu(!$('body').hasClass('menu-open')); });
-  $(document).on('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
-
+  // links into the page switch slides through the template's side navigation
   $('[data-go]').on('click', function (e) {
     e.preventDefault();
-    scrollTo(+$(this).data('go'));
+    $('.side-nav li').eq(+$(this).data('go')).trigger('click');
   });
 
-  $('.side-nav li').on('click', function () { scrollTo($(this).index()); });
+  // the phone call / order bar steps aside on the order slide itself
+  var order = document.getElementById('order');
+  function syncBar() { $('.action-bar').toggleClass('is-hidden', order.classList.contains('section--is-active')); }
+  new MutationObserver(syncBar).observe(order, { attributes: true, attributeFilter: ['class'] });
 
-  $('.outer-nav li').on('click', function () {
-    setMenu(false);
-    scrollTo($(this).index());
-  });
-
-  $('.cta').on('click', function () { scrollTo(last); });
-
-  // highlight the section in view; the header order button shows between the first and last sections
-  if ('IntersectionObserver' in window) {
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var index = $sections.index(entry.target);
-        $('.side-nav, .outer-nav').children().removeClass('is-active');
-        $('.side-nav').children().eq(index).addClass('is-active');
-        $('.outer-nav').children().eq(index).addClass('is-active');
-        $('.header--cta').toggleClass('is-active', index !== 0 && index !== last);
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    $sections.each(function () { spy.observe(this); });
-
-    // the phone call / order bar steps aside once the order form itself is on screen
-    new IntersectionObserver(function (entries) {
-      $('.action-bar').toggleClass('is-hidden', entries[0].isIntersecting);
-    }, { threshold: 0.25 }).observe(document.getElementById('order'));
-  }
-
-  // keyboard access for div buttons
+  // keyboard access for the template's div buttons
   $('[role="button"]').on('keydown', function (e) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $(this).trigger('click'); }
   });
 
-  // ---- brands slider ---------------------------------------------------
-  // three visible circles: left, center, right; the arrows rotate them through all brands
-  var $items = $('.slider--item');
-
-  function showBrand(center) {
-    var n = $items.length;
-    center = (center + n) % n;
-    $items.removeClass('slider--item-left slider--item-center slider--item-right');
-    $items.eq((center - 1 + n) % n).addClass('slider--item-left');
-    $items.eq(center).addClass('slider--item-center');
-    $items.eq((center + 1) % n).addClass('slider--item-right');
-  }
-
-  $('.slider--prev, .slider--next').on('click', function () {
-    var step = $(this).hasClass('slider--next') ? 1 : -1;
-    var center = $items.index($items.filter('.slider--item-center'));
-    $('.slider').stop().animate({ opacity: 0 }, 300, function () {
-      showBrand(center + step);
-      $('.slider').animate({ opacity: 1 }, 300);
-    });
-  });
-
   // ---- order form ------------------------------------------------------
-  // keep the label above a filled field
-  $('.work-request--information input').on('focusout', function () {
-    $(this).toggleClass('has-value', this.value !== '');
-  });
-
   // The site is static: the request opens the visitor's mail app with everything filled in.
   $('.work-request').on('submit', function (e) {
     e.preventDefault();
