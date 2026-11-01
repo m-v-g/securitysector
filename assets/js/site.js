@@ -41,8 +41,9 @@
   // The page is one long scroll; every menu item, numbered dot and order button scrolls to its section.
   var last = $sections.length - 1;
 
+  // sections snap to the top of the screen; their own top padding clears the header
   function scrollTo(index) {
-    var top = index === 0 ? 0 : $sections.eq(index).offset().top - $('.header').outerHeight();
+    var top = $sections.eq(index).offset().top;
     window.scrollTo({ top: top, behavior: 'smooth' });
   }
 
