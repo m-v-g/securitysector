@@ -22,12 +22,9 @@ h1, h2
 
 // language switcher
 .lang
-  position: absolute
-  top: 50%
-  right: 60px
   display: flex
   gap: 2px
-  transform: translateY(-50%)
+  margin: 0 8px 0 auto
 
   button
     padding: 4px 7px
@@ -179,36 +176,142 @@ input[type="submit"]:focus-visible
 .action-bar
   display: none
 
+// one ordinary scrolling page instead of the template's full-screen slides
+html,
+body
+  height: auto
+
+body
+  overflow-x: hidden
+
+  &.menu-open
+    overflow: hidden
+
+.perspective
+  height: auto
+  overflow: visible
+
+.container
+  transform: none
+  outline: none
+
+.l-viewport
+  height: auto
+  overflow: visible
+  box-shadow: none
+
+.l-main-content
+  height: auto
+
+.l-section
+  position: relative
+  height: auto
+  opacity: 1
+  visibility: visible
+  transition: none
+
+  & + .l-section
+    border-top: 1px solid #1c1c1c
+
+  & > div
+    height: auto
+    min-height: 100vh
+    padding: 90px 0 60px 0
+    box-sizing: border-box
+
+// header and side navigation stay put while the page scrolls under them
+.header
+  position: fixed
+  right: 0
+  z-index: 30
+  padding: 0 max(5%, calc((100% - 1440px) / 2))
+  background-color: rgba(12, 12, 12, .94)
+  box-sizing: border-box
+
+  &--cta
+    margin-left: 0
+
+.l-side-nav
+  position: fixed
+  top: 0
+  left: max(5%, calc((100% - 1440px) / 2))
+  height: 100vh
+  z-index: 20
+
+.l-section > .contact
+  padding: 0
+
+.contact
+  position: relative
+  height: 100vh
+  margin: 0 calc(50% - 50vw)
+
+  &--lockup
+    padding-top: 70px
+    box-sizing: border-box
+
+// menu: a plain full-screen list instead of the 3D page turn
+.outer-nav
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  z-index: 25
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 6px
+  transform: none
+  background-color: $black
+  opacity: 0
+  transition: opacity .25s ease-in-out, visibility 0s .25s
+
+  &.is-vis
+    opacity: 1
+    transition: opacity .25s ease-in-out
+
+  & > li
+    font-size: clamp(22px, min(5.5vh, 7.5vw), 48px)
+    transform: translateY(16px)
+
+    &.is-vis
+      transform: none
+
+    &::before
+      display: none
+
+    &.is-active,
+    &:hover
+      color: $highlight
+
+.menu-open .header--cta
+  visibility: hidden
+
+.header--nav-toggle
+  span,
+  &::before,
+  &::after
+    transition: transform .25s ease-in-out, opacity .25s ease-in-out
+
+.menu-open .header--nav-toggle
+  span
+    opacity: 0
+
+  &::before
+    transform: translateY(5px) rotate(45deg)
+
+  &::after
+    transform: translateY(-5px) rotate(-45deg)
+
 @media (max-width: 900px)
 
   .intro--banner img
     width: 300px
 
-// phones: one ordinary scrolling page instead of full-screen slides
+// phones
 @media (max-width: 767px)
-
-  html,
-  body
-    height: auto
-    overflow-x: hidden
-
-  .perspective
-    height: auto
-    overflow: visible
-
-    &--modalview
-      overflow: hidden
-
-  .perspective:not(.perspective--modalview) .container
-    transform: none
-    outline: none
-
-  .l-viewport
-    height: auto
-    overflow: visible
-    box-shadow: none
-    // hammer.js sets touch-action for its swipe; let the page scroll natively
-    touch-action: auto !important
 
   .l-wrapper
     width: auto
@@ -217,34 +320,14 @@ input[type="submit"]:focus-visible
     box-sizing: border-box
 
   .header
-    position: fixed
     padding: 0 12px 0 20px
-    background-color: rgba(12, 12, 12, .94)
-    box-sizing: border-box
 
     &--cta
       display: none
 
-  .lang
-    right: 58px
-
-  .l-main-content
-    height: auto
-
-  .l-section
-    position: relative
-    height: auto
-    opacity: 1
-    visibility: visible
-    transition: none
-
-    & + .l-section
-      border-top: 1px solid #1c1c1c
-
-    & > div
-      height: auto
-      padding: 96px 0 48px 0
-      transform: none !important
+  .l-section > div
+    min-height: 0
+    padding: 96px 0 48px 0
 
   .action-bar
     position: fixed
@@ -276,7 +359,7 @@ input[type="submit"]:focus-visible
         background-color: $highlight
         border-color: $highlight
 
-  .perspective--modalview .action-bar
+  .menu-open .action-bar
     display: none
 
   body
@@ -291,7 +374,7 @@ input[type="submit"]:focus-visible
     padding: calc(56px + 56vw) 0 24px 0
 
   .contact
-    position: relative
+    height: auto
     margin: 0 -20px
     background-size: 100% auto
     background-position: center 56px
@@ -409,6 +492,12 @@ input[type="submit"]:focus-visible
   .about--options
     display: flex
     margin-top: 40px
+
+// the language switcher needs the room on narrow phones; the red mark stays
+@media (max-width: 389px)
+
+  .header--logo p
+    display: none
 
 @media (max-width: 400px)
 

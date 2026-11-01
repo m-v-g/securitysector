@@ -1,6 +1,6 @@
 // Site behaviour on top of the template's functions.js
 (function ($) {
-  var phone = window.matchMedia('(max-width: 767px)');
+
   var $sections = $('.main-content > li');
 
   // ---- languages -------------------------------------------------------
@@ -38,49 +38,87 @@
   if (saved && saved !== 'hy') setLang(saved);
 
   // ---- navigation ------------------------------------------------------
-  // On phones the slides become one scrolling page, so menu items scroll instead.
-  function scrollTo(index, delay) {
-    setTimeout(function () {
-      var top = $sections.eq(index).offset().top - $('.header').outerHeight();
-      window.scrollTo({ top: index === 0 ? 0 : top, behavior: 'smooth' });
-    }, delay || 0);
+  // The page is one long scroll; every menu item, numbered dot and order button scrolls to its section.
+  var last = $sections.length - 1;
+
+  function scrollTo(index) {
+    var top = index === 0 ? 0 : $sections.eq(index).offset().top - $('.header').outerHeight();
+    window.scrollTo({ top: top, behavior: 'smooth' });
   }
+
+  function setMenu(open) {
+    $('body').toggleClass('menu-open', open);
+    $('.outer-nav, .outer-nav li').toggleClass('is-vis', open);
+    $('.header--nav-toggle').attr('aria-expanded', open);
+  }
+
+  $('.header--nav-toggle').on('click', function () { setMenu(!$('body').hasClass('menu-open')); });
+  $(document).on('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
 
   $('[data-go]').on('click', function (e) {
     e.preventDefault();
-    var index = +$(this).data('go');
-    if (phone.matches) scrollTo(index);
-    else $('.side-nav li').eq(index).trigger('click');
+    scrollTo(+$(this).data('go'));
   });
+
+  $('.side-nav li').on('click', function () { scrollTo($(this).index()); });
 
   $('.outer-nav li').on('click', function () {
-    if (phone.matches) scrollTo($(this).index(), 450);
+    setMenu(false);
+    scrollTo($(this).index());
   });
 
-  $('.cta').on('click', function () {
-    if (phone.matches) scrollTo($sections.length - 1);
-  });
+  $('.cta').on('click', function () { scrollTo(last); });
 
-  // the phone call / order bar steps aside once the order form itself is on screen
+  // highlight the section in view; the header order button shows between the first and last sections
   if ('IntersectionObserver' in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var index = $sections.index(entry.target);
+        $('.side-nav, .outer-nav').children().removeClass('is-active');
+        $('.side-nav').children().eq(index).addClass('is-active');
+        $('.outer-nav').children().eq(index).addClass('is-active');
+        $('.header--cta').toggleClass('is-active', index !== 0 && index !== last);
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    $sections.each(function () { spy.observe(this); });
+
+    // the phone call / order bar steps aside once the order form itself is on screen
     new IntersectionObserver(function (entries) {
       $('.action-bar').toggleClass('is-hidden', entries[0].isIntersecting);
     }, { threshold: 0.25 }).observe(document.getElementById('order'));
   }
 
-  // keep the template's wheel and arrow-key slide switching away from the scrolling phone page
-  ['mousewheel', 'DOMMouseScroll', 'keyup'].forEach(function (type) {
-    window.addEventListener(type, function (e) { if (phone.matches) e.stopPropagation(); }, true);
-  });
-
-  // keyboard access for the template's div buttons
+  // keyboard access for div buttons
   $('[role="button"]').on('keydown', function (e) {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $(this).trigger('click'); }
   });
 
+  // ---- brands slider ---------------------------------------------------
+  // three visible circles: left, center, right; the arrows rotate them through all brands
+  var $items = $('.slider--item');
+
+  function showBrand(center) {
+    var n = $items.length;
+    center = (center + n) % n;
+    $items.removeClass('slider--item-left slider--item-center slider--item-right');
+    $items.eq((center - 1 + n) % n).addClass('slider--item-left');
+    $items.eq(center).addClass('slider--item-center');
+    $items.eq((center + 1) % n).addClass('slider--item-right');
+  }
+
+  $('.slider--prev, .slider--next').on('click', function () {
+    var step = $(this).hasClass('slider--next') ? 1 : -1;
+    var center = $items.index($items.filter('.slider--item-center'));
+    $('.slider').stop().animate({ opacity: 0 }, 300, function () {
+      showBrand(center + step);
+      $('.slider').animate({ opacity: 1 }, 300);
+    });
+  });
+
   // ---- order form ------------------------------------------------------
-  // the template's handler also jumped to the top of the page, which breaks the phone layout
-  $('.work-request--information input').off('focusout').on('focusout', function () {
+  // keep the label above a filled field
+  $('.work-request--information input').on('focusout', function () {
     $(this).toggleClass('has-value', this.value !== '');
   });
 
