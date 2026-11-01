@@ -1,0 +1,76 @@
+.services
+  position: relative
+  display: flex
+  width: 960px
+  max-width: 80%
+  height: 100%
+  flex-direction: column
+  justify-content: center
+  margin: 0 auto
+
+  @media (max-width: 1180px)
+    max-width: 100%
+
+  h2
+    margin: 0 0 40px 0
+    font-size: 30px
+    text-align: center
+
+  &--grid
+    display: grid
+    grid-template-columns: repeat(3, 1fr)
+    gap: 40px 50px
+    margin: 0
+    padding: 0
+    list-style: none
+
+    li
+      padding-top: 16px
+      border-top: 2px solid $muted-gray
+      position: relative
+
+      &::before
+        content: ""
+        position: absolute
+        top: -2px
+        left: 0
+        width: 30px
+        height: 2px
+        background-color: $highlight
+
+    h3
+      margin: 0 0 10px 0
+      font-size: 17px
+      line-height: 1.25
+
+    p
+      margin: 0
+      color: #9a9a9a
+      font-size: 14px
+      line-height: 1.5
+
+@media (max-width: 900px)
+
+  .services--grid
+    gap: 30px 30px
+
+@media (max-width: 767px)
+
+  .services
+    h2
+      margin-bottom: 24px
+
+    &--grid
+      grid-template-columns: repeat(2, 1fr)
+      gap: 22px 20px
+
+      h3
+        font-size: 15px
+
+      p
+        font-size: 13px
+
+@media (max-width: 600px) and (max-height: 750px)
+
+  .services--grid p
+    display: none
